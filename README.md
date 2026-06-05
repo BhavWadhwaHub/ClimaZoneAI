@@ -16,7 +16,7 @@ web/dashboard.html
 
 The main data pipeline is present and can regenerate the processed datasets and dashboard from the included CSV files.
 
-The Streamlit forecasting app and some model modules need dependency and code cleanup before every forecasting feature will run smoothly. In particular, the repository contains code that imports XGBoost, but `xgboost` is not listed in `requirements.txt`. Also, some files call `ProphetForecast.predict()` with an `include_uncertainty` argument, but the current `ProphetForecast.predict()` method only accepts `days_ahead`.
+The Streamlit forecasting app is functional. The only outstanding dependency gap is that `xgboost` is not listed in `requirements.txt` — it must be installed manually before the XGBoost and Ensemble forecast tabs will work.
 
 ## What the Project Does
 
@@ -157,7 +157,7 @@ The `models/` folder contains forecasting classes:
 
 | File | Purpose |
 |---|---|
-| `models/prophet_model.py` | Wraps Meta Prophet for time-series forecasting of `Renewable_Score` |
+| `models/prophet_model.py` | Ridge regression with Fourier seasonal features for time-series forecasting of `Renewable_Score` (Stan/CmdStan not required) |
 | `models/xgboost_model.py` | Uses `XGBRegressor` with weather, lag, and rolling features |
 | `models/ensemble_model.py` | Combines Prophet and XGBoost forecasts using weighted averaging |
 
@@ -449,7 +449,7 @@ Current limitations include:
 - Wind values may be estimated when measured wind columns are missing.
 - The renewable indices are heuristic scores, not direct measurements of real energy output in kWh.
 - The static dashboard forecasts use historical monthly patterns rather than the Prophet/XGBoost classes.
-- The Streamlit app and ensemble model call `ProphetForecast.predict()` with an unsupported `include_uncertainty` argument in the current code.
+- The Prophet model is implemented with sklearn Ridge regression and Fourier features rather than Meta's Stan-based Prophet library, since CmdStan requires build tools (make/MinGW) not present on all systems.
 - `xgboost` is required by `models/xgboost_model.py`, but it is not listed in `requirements.txt`.
 - `data/forecast_results.csv` and `data/top3_ranked_cities.csv` are not included in the uploaded repository.
 - `src/forecast_model.py` references a fallback `models.regression_model.LinearForecast`, but `models/regression_model.py` is not included.
@@ -466,22 +466,6 @@ pip install xgboost
 ```
 
 Also consider adding it to `requirements.txt`.
-
-### Issue: `TypeError: ProphetForecast.predict() got an unexpected keyword argument 'include_uncertainty'`
-
-The current method in `models/prophet_model.py` is:
-
-```python
-def predict(self, days_ahead=30):
-```
-
-but other files call it like:
-
-```python
-predict(days, include_uncertainty=False)
-```
-
-A simple fix is to remove the `include_uncertainty` argument from those calls, or update `ProphetForecast.predict()` to accept and handle that argument.
 
 ### Issue: Ranking script cannot find `forecast_results.csv`
 
@@ -508,8 +492,7 @@ An internet connection is needed unless Plotly.js is bundled locally.
 Recommended cleanup items for the next version:
 
 1. Add `xgboost` to `requirements.txt`.
-2. Fix the Prophet `include_uncertainty` argument mismatch.
-3. Add or remove the missing `models/regression_model.py` fallback.
+2. Add or remove the missing `models/regression_model.py` fallback.
 4. Regenerate `File Structure.txt` so it matches the actual repository.
 5. Add a license file if the project will be shared publicly.
 6. Add sample screenshots of `web/dashboard.html` to the README.
