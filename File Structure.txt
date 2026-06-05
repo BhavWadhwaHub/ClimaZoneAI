@@ -1,0 +1,41 @@
+ClimaZoneAI/
+│
+├── 📁 data/
+│   ├── ghcn_canada.csv                     # Raw dataset from GHCN
+│   ├── cleaned_data_with_city_filled.csv   # Cleaned dataset
+│   ├── processed_indices.csv               # After computing Solar/Wind/Hydro indices
+│   └── forecast_results.csv                # Final forecasted renewable scores
+│
+├── 📁 src/
+│   ├── _init_.py
+│   ├── data_preprocessing.py               # Cleans + infers missing variables (AI heuristics)
+│   ├── compute_indices.py                  # Computes Solar, Wind, Hydro indices
+│   ├── forecast_model.py                   # Prophet forecasting for each city
+│   ├── rank_top_cities.py                  # Aggregates & ranks top 3 per province
+│   └── visualize_dashboard.py              # Streamlit / Flask dashboard for results
+│
+├── 📁 models/
+│   ├── prophet_models/                     # Saved Prophet models (per city/province)
+│   ├── ai_inference_model.pkl              # Optional ML model for variable inference
+│
+├── 📁 outputs/
+│   ├── ClimaZoneAI_Updated_Proposal.pdf    # Final proposal (your report)
+│   ├── indices_preview.csv                 # Sample of computed index results
+│   ├── forecast_plots/                     # Prophet visualizations for each city
+│   └── top3_results.json                   # Ranked results per province
+│
+├── 📁 notebooks/
+│   ├── ClimaZoneAI_Exploration.ipynb       # Initial data exploration & testing
+│   └── ClimaZoneAI_Forecast_Demo.ipynb     # Demo notebook for hackathon judges
+│
+├── 📁 web/
+│   ├── app.py                              # Flask/Streamlit web app
+│   ├── templates/
+│   │   └── index.html                      # Dashboard UI
+│   └── static/
+│       ├── style.css                       # Dashboard styling
+│       └── scripts.js                      # Optional frontend interactions
+│
+├── requirements.txt                        # Python dependencies
+├── README.md                               # Full project overview & setup guide
+└── LICENSE                                 # (Optional) open-source license
